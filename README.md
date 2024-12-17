@@ -15,6 +15,9 @@
 
    ```docker run -p 8084:8080  ztl-country-service:0.0.1```
 
+4) Executing a request:
+
+   ```localhost:8084/api/countries/europe```
 
 ### Potential Deployment:
 
