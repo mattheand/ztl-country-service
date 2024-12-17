@@ -31,6 +31,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-resolver-dns-native-macos</artifactId>
+            <version>${netty.version}</version>
+            <classifier>osx-aarch_64</classifier> <!-- Use 'osx-x86_64' for older Macs -->
+        </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>

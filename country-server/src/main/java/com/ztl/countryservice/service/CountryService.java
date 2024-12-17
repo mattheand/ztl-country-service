@@ -6,6 +6,7 @@ import com.ztl.countryservice.domain.Currency;
 import com.ztl.countryservice.service.externalservice.RestCountriesService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -22,7 +23,7 @@ public class CountryService {
 
     private final RestCountriesService restCountriesService;
 
-    //Cache response with caffeine
+    @Cacheable(value = "europeanCountries", key = "#sortDirection", unless = "#result == null || #result.isEmpty()")
     public List<Country> getEuropeanCountries(final SortDirection sortDirection) {
         List<Country> countries = restCountriesService.getEuropeanCountries();
         if (countries != null && SortDirection.ASC.equals(sortDirection)) {
@@ -34,10 +35,7 @@ public class CountryService {
         return countries;
     }
 
-    private static Comparator<Country> getCountryComparator() {
-        return Comparator.comparing(Country::getCommonName).thenComparing(Country::getFirstCurrencyName);
-    }
-
+    @Cacheable(value = "countriesByCurrency", unless = "#result == null || #result.isEmpty()")
     public Map<String, Set<String>> getCountriesByCurrency() {
         List<Country> countries = restCountriesService.getAllCountries();
         if (countries != null && !countries.isEmpty()) {
@@ -58,5 +56,9 @@ public class CountryService {
         }
         // Return the map, where key is currency code and value is list of countries
         return countriesByCurrency;
+    }
+
+    private static Comparator<Country> getCountryComparator() {
+        return Comparator.comparing(Country::getCommonName).thenComparing(Country::getFirstCurrencyName);
     }
 }
