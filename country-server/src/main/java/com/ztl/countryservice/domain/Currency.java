@@ -1,10 +1,12 @@
 package com.ztl.countryservice.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-@Builder
 @Data
+@AllArgsConstructor
+@Builder
 public class Currency {
     private String name;
     private String symbol;

@@ -12,12 +12,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -45,5 +42,23 @@ class CountriesControllerTest {
             .andExpect(jsonPath("$.[0].name.common").value("norway"))
             .andExpect(jsonPath("$.[0].currencies.NOK.name").value(("Norwegian krone")))
             .andExpect(jsonPath("$.[0].currencies.NOK.symbol").value(("kr")));
+    }
+
+    @Test
+    void when_invalidPath_ErrorMessage() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/invalidUrl").contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().is4xxClientError())
+            .andExpect(jsonPath("$.code").value("NOT_FOUND"))
+            .andExpect(jsonPath("$.message").value("No static resource api/invalidUrl."));
+    }
+
+
+    @Test
+    void when_serviceThrowsError_ErrorMessageWith500() throws Exception {
+        when(countryService.getCountriesByCurrency()).thenThrow(new RuntimeException("Failed to fetch countries by currency"));
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/countries/currency/all").contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().is5xxServerError())
+            .andExpect(jsonPath("$.code").value("INTERNAL_SERVER_ERROR"))
+            .andExpect(jsonPath("$.message").value("Failed to fetch countries by currency"));
     }
 }

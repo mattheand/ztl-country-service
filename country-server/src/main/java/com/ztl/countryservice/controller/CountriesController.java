@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/countries")
@@ -26,9 +27,8 @@ public class CountriesController {
     }
 
     //A list of all currencies in the world, with information in which countries each currency is used
-    @GetMapping("countriesByCurrency")
-    public Map<String, Country> getCountriesByCurrency() {
-        //return countryService.getCountriesByCurrency();
-        return null;
+    @GetMapping("currency/all")
+    public Map<String, Set<String>> getCountriesByCurrency() {
+        return countryService.getCountriesByCurrency();
     }
 }
